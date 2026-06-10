@@ -12,6 +12,5 @@
 
 # Local tooling
 .claude/
-.vercelignore
 .vercel/
 .DS_Store
