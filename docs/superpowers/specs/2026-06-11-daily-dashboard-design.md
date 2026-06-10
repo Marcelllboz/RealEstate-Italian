@@ -42,8 +42,8 @@ Hybrid of two explored directions: **"Command" dark visuals + "Studio" stacked-c
 Defined in `dashboard/data/config.json` so the list can change without touching code or agent prompts:
 
 - **Athelstone — primary, always first and most detailed.**
-- Campbelltown, Newton, Payneham, Norwood, plus western-suburbs Italian belt.
-- Marcello expects to add/remove suburbs over time; agents read the config on every run.
+- Initial list: Athelstone, Campbelltown, Newton, Payneham, Norwood.
+- Marcello expects to add/remove suburbs over time (e.g. western-suburbs Italian belt); editing `config.json` is the only change needed — agents read it on every run.
 
 ## File structure
 
