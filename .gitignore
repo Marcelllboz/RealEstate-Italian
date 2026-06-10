@@ -5,6 +5,7 @@
 *.md
 !README.md
 !docs/superpowers/specs/*.md
+!docs/superpowers/plans/*.md
 
 # Brainstorm session scratch
 .superpowers/
