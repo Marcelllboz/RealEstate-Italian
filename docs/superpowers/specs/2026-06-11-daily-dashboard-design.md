@@ -33,9 +33,21 @@ Hybrid of two explored directions: **"Command" dark visuals + "Studio" stacked-c
 1. **Metric tiles** — RBA cash rate, Adelaide auction clearance rate. Source: `brief.json`.
 2. **Market pulse** — 2–4 sentence overnight summary: Adelaide/SA market news, rate moves, anything an agent should know before work. Source: `brief.json` (daily agent).
 3. **My suburbs** — new listings, sales, upcoming auctions in the farm suburbs. Source: `brief.json` (daily agent).
-4. **La frase di oggi** — Italian phrase/drill of the day with translation. Source: `italian.json` rotation (no agent).
-5. **Skill of the day** — one script, objection handler, or technique. Source: `skills.json` rotation (no agent).
-6. **My day** — editable task checklist, persisted in browser localStorage (key `brief-v1`).
+4. **Il Territorio** — interactive isometric farm-area map (see below). Sources: `brief.json` + `stats.json` (no extra agent work).
+5. **La frase di oggi** — Italian phrase/drill of the day with translation. Source: `italian.json` rotation (no agent).
+6. **Skill of the day** — one script, objection handler, or technique. Source: `skills.json` rotation (no agent).
+7. **My day** — editable task checklist, persisted in browser localStorage (key `brief-v1`).
+
+## Il Territorio — farm-area map (approved v2 mockup)
+
+A hand-built isometric 2.5D SVG map of the farm suburbs. Suburb-level activity radar, **not** a per-address pin board (the agent learns suburb-level facts, not reliable coordinates).
+
+- Each suburb in `config.json` is an isometric tile; Athelstone is largest, raised, centered, with a glow halo and accented top face. Dormant suburbs render dim — contrast makes active ones pop.
+- Activity dots per suburb from today's `brief.json`: teal = new listing, coral = auction, red = sold. Dots pulse via subtle CSS animation.
+- **Click/tap a suburb** → detail panel below the map: weekly stats (median, days on market, trend from `stats.json`) + today's activity lines for that suburb (from `brief.json`). Tap another suburb to swap; all client-side, zero token cost.
+- Detail richness varies with what the daily agent's searches surface; the panel must read well with both rich lines and a bare "1 new listing".
+- Adding a suburb to `config.json` adds a tile (tile layout positions defined per suburb in config).
+- No external map libraries, tiles, or API keys.
 
 ## Farm suburbs
 
