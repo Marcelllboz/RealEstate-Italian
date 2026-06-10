@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventuno Giorni — Marcello's Edge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Karla:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5EFE2;
+  --paper-deep:#EDE4D0;
+  --ink:#2A1E16;
+  --ink-soft:#5C4B3E;
+  --terra:#C0512F;
+  --terra-deep:#9C3D20;
+  --olive:#5C6B3C;
+  --olive-deep:#46522D;
+  --gold:#B98A2F;
+  --line:#D8CBB2;
+  --green-flag:#3E7449;
+  --red-flag:#BE3A34;
+  --shadow:0 2px 0 rgba(42,30,22,.08), 0 12px 32px -12px rgba(42,30,22,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Karla',sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  position:relative;
+  min-height:100vh;
+}
+/* paper grain */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection{background:var(--terra);color:var(--paper)}
+
+.tricolor{height:5px;display:flex;position:sticky;top:0;z-index:60}
+.tricolor span{flex:1}
+.tricolor span:nth-child(1){background:var(--green-flag)}
+.tricolor span:nth-child(2){background:#F4F1E8}
+.tricolor span:nth-child(3){background:var(--red-flag)}
+
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+/* ---------- HEADER ---------- */
+header{padding:56px 0 36px;position:relative;overflow:hidden}
+.kicker{
+  font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--terra-deep);
+  font-weight:700;display:flex;align-items:center;gap:14px;
+  animation:rise .7s .05s both;
+}
+.kicker::after{content:"";height:1px;flex:0 0 64px;background:var(--terra-deep)}
+h1.masthead{
+  font-family:'Fraunces',serif;
+  font-weight:850;
+  font-size:clamp(34px,8.6vw,104px);
+  line-height:.95;
+  letter-spacing:-.02em;
+  margin:14px 0 6px;
+  animation:rise .7s .15s both;
+}
+h1 .it{font-style:italic;font-weight:560;color:var(--terra)}
+.subhead{
+  font-size:17px;color:var(--ink-soft);max-width:560px;
+  animation:rise .7s .25s both;
+}
+.subhead strong{color:var(--ink)}
+.stamp{
+  position:absolute;right:0;top:60px;
+  border:2.5px solid var(--olive-deep);color:var(--olive-deep);
+  font-family:'Fraunces',serif;font-weight:700;font-size:13px;letter-spacing:.18em;
+  padding:10px 16px;border-radius:6px;transform:rotate(7deg);
+  text-transform:uppercase;text-align:center;line-height:1.5;
+  animation:stampIn .55s .55s both;
+  background:rgba(92,107,60,.05);
+}
+.stamp small{display:block;font-family:'Karla';font-weight:700;font-size:10px;letter-spacing:.3em}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes stampIn{from{opacity:0;transform:rotate(7deg) scale(1.6)}to{opacity:1;transform:rotate(7deg) scale(1)}}
+
+/* ---------- SCOREBOARD ---------- */
+.scoreboard{
+  display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;
+  border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;
+  background:var(--paper);box-shadow:var(--shadow);
+  animation:rise .7s .35s both;
+}
+.score-cell{padding:20px 22px;border-left:1.5px dashed var(--line)}
+.score-cell:first-child{border-left:none;background:var(--ink);color:var(--paper)}
+.score-label{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;opacity:.65}
+.score-num{font-family:'Fraunces',serif;font-weight:800;font-size:40px;line-height:1.1}
+.score-num em{font-style:italic;font-weight:500;font-size:20px;opacity:.55}
+.bigbar{height:8px;background:rgba(245,239,226,.2);border-radius:99px;margin-top:10px;overflow:hidden}
+.bigbar i{display:block;height:100%;background:linear-gradient(90deg,var(--terra),var(--gold));border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+/* ---------- NAV ---------- */
+nav.tabs{
+  position:sticky;top:5px;z-index:50;
+  display:flex;gap:8px;margin:34px 0 0;padding:8px;
+  background:rgba(42,30,22,.94);backdrop-filter:blur(8px);
+  border-radius:99px;width:max-content;max-width:100%;overflow-x:auto;
+  animation:rise .7s .45s both;
+}
+nav.tabs button{
+  font-family:'Karla';font-weight:700;font-size:14px;letter-spacing:.04em;
+  background:transparent;color:var(--paper);border:none;cursor:pointer;
+  padding:10px 20px;border-radius:99px;white-space:nowrap;transition:all .25s;
+}
+nav.tabs button:hover{color:var(--gold)}
+nav.tabs button.active{background:var(--terra);color:#fff}
+nav.tabs button .it-label{font-family:'Fraunces',serif;font-style:italic;font-weight:500;opacity:.7;margin-right:6px}
+
+main{padding:38px 0 90px}
+section.panel{display:none;animation:rise .5s both}
+section.panel.show{display:block}
+
+.section-title{
+  font-family:'Fraunces',serif;font-weight:800;font-size:clamp(30px,4.5vw,44px);
+  letter-spacing:-.01em;margin-bottom:6px;
+}
+.section-title .it{font-style:italic;font-weight:520;color:var(--olive-deep)}
+.section-sub{color:var(--ink-soft);max-width:640px;margin-bottom:30px}
+
+/* ---------- DAYS ---------- */
+.week-label{
+  display:flex;align-items:center;gap:16px;margin:38px 0 18px;
+  font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:800;color:var(--terra-deep);
+}
+.week-label::after{content:"";flex:1;height:1px;background:var(--line)}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.day{
+  background:#FBF7ED;border:1.5px solid var(--line);border-radius:16px;
+  padding:20px;cursor:pointer;position:relative;transition:transform .25s,box-shadow .25s,border-color .25s;
+}
+.day:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--ink)}
+.day.today{border:2px solid var(--terra);background:#FCF3EA}
+.day.today::after{
+  content:"OGGI · TODAY";position:absolute;top:-11px;right:14px;
+  background:var(--terra);color:#fff;font-size:10px;font-weight:800;letter-spacing:.22em;
+  padding:3px 10px;border-radius:99px;
+}
+.day.done{background:#F0F2E4;border-color:var(--olive)}
+.day-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.day-num{font-family:'Fraunces',serif;font-weight:850;font-size:44px;line-height:1;color:var(--ink)}
+.day-num small{font-family:'Karla';font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-top:2px}
+.day-tag{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--terra-deep);margin-top:6px}
+.ring{width:46px;height:46px;flex:0 0 46px}
+.ring circle{fill:none;stroke-width:5}
+.ring .track{stroke:var(--line)}
+.ring .fill{stroke:var(--olive);stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .5s}
+.ring text{font:800 12px 'Karla';fill:var(--ink)}
+.tasks{margin-top:14px;display:none}
+.day.open .tasks{display:block}
+.day.open{cursor:default}
+.task{
+  display:flex;gap:11px;align-items:flex-start;padding:9px 0;
+  border-top:1px dashed var(--line);cursor:pointer;font-size:14.5px;
+}
+.task:hover .box{border-color:var(--terra)}
+.box{
+  width:19px;height:19px;flex:0 0 19px;border:2px solid var(--ink-soft);border-radius:5px;
+  margin-top:2px;display:grid;place-items:center;transition:all .2s;background:#fff;
+}
+.box svg{width:12px;height:12px;opacity:0;transform:scale(.4);transition:all .2s}
+.task.checked .box{background:var(--terra);border-color:var(--terra)}
+.task.checked .box svg{opacity:1;transform:scale(1)}
+.task.checked span{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:rgba(192,81,47,.5)}
+.task b.cat{font-size:10px;letter-spacing:.14em;font-weight:800;text-transform:uppercase;padding:2px 7px;border-radius:4px;margin-right:7px;white-space:nowrap}
+.cat.ita{background:#E9EFD9;color:var(--olive-deep)}
+.cat.re{background:#F6E3D7;color:var(--terra-deep)}
+.cat.scr{background:#F0E6CC;color:#7d5c14}
+.fatto{
+  position:absolute;bottom:14px;right:16px;transform:rotate(-9deg);
+  border:2px solid var(--olive-deep);color:var(--olive-deep);border-radius:4px;
+  font-family:'Fraunces',serif;font-weight:800;font-size:13px;letter-spacing:.2em;padding:2px 9px;
+  animation:stampIn .4s both;
+}
+.hint{font-size:12px;color:var(--ink-soft);margin-top:10px;font-style:italic}
+
+/* ---------- STUDY ---------- */
+.note{
+  border-left:4px solid var(--gold);background:#F4ECD7;padding:14px 18px;border-radius:0 10px 10px 0;
+  font-size:14px;margin-bottom:30px;color:var(--ink-soft);
+}
+.process{counter-reset:step;margin:10px 0 40px}
+.step{
+  display:flex;gap:18px;padding:16px 0;border-bottom:1px dashed var(--line);counter-increment:step;
+}
+.step::before{
+  content:counter(step,decimal-leading-zero);
+  font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:26px;color:var(--terra);
+  flex:0 0 44px;line-height:1.2;
+}
+.step h4{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:3px}
+.step p{font-size:14.5px;color:var(--ink-soft)}
+.cheat{
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:8px 0 44px;
+}
+.cheat-card{
+  background:var(--ink);color:var(--paper);border-radius:16px;padding:24px;position:relative;overflow:hidden;
+}
+.cheat-card.alt{background:var(--olive-deep)}
+.cheat-card h4{font-family:'Fraunces',serif;font-style:italic;font-size:22px;font-weight:600;margin-bottom:10px;color:var(--gold)}
+.cheat-card.alt h4{color:#DCE5C2}
+.cheat-card li{font-size:14px;margin:7px 0 7px 18px;opacity:.92}
+.glossary-tools{display:flex;align-items:center;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.toggle{
+  display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+  font-weight:700;font-size:14px;border:1.5px solid var(--ink);border-radius:99px;padding:8px 16px;
+  transition:all .2s;background:#FBF7ED;
+}
+.toggle.on{background:var(--ink);color:var(--paper)}
+.gloss-cat{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:22px;color:var(--terra-deep);
+  margin:30px 0 12px;display:flex;align-items:center;gap:14px;
+}
+.gloss-cat::after{content:"";flex:1;height:1px;background:var(--line)}
+.gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.term{
+  background:#FBF7ED;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;transition:border-color .2s;
+}
+.term:hover{border-color:var(--terra)}
+.term b{font-family:'Fraunces',serif;font-size:16.5px;font-weight:700}
+.term p{font-size:13.5px;color:var(--ink-soft);margin-top:4px;transition:filter .2s}
+.quiz-on .term p{filter:blur(6px);cursor:pointer}
+.quiz-on .term p.revealed{filter:none}
+.dossier{margin-top:44px}
+.dossier-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.doss-card{background:#FBF7ED;border:1.5px solid var(--line);border-radius:16px;padding:22px}
+.doss-card h4{font-family:'Fraunces',serif;font-size:19px;margin-bottom:8px}
+.doss-card h4 .it{font-style:italic;color:var(--olive-deep);font-weight:560}
+.doss-card li{font-size:14px;color:var(--ink-soft);margin:6px 0 6px 17px}
+.doss-card li b{color:var(--ink)}
+
+/* ---------- PHRASES ---------- */
+.phrase-group{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:22px;color:var(--olive-deep);
+  margin:32px 0 12px;display:flex;align-items:center;gap:14px;
+}
+.phrase-group::after{content:"";flex:1;height:1px;background:var(--line)}
+.phrase{
+  display:flex;gap:13px;align-items:center;background:#FBF7ED;border:1.5px solid var(--line);
+  border-radius:12px;padding:12px 16px;margin-bottom:8px;cursor:pointer;transition:all .2s;
+}
+.phrase:hover{border-color:var(--olive);transform:translateX(3px)}
+.phrase.checked{background:#F0F2E4;border-color:var(--olive)}
+.phrase .pit{font-family:'Fraunces',serif;font-weight:600;font-size:17px;flex:1}
+.phrase .pen{font-size:13.5px;color:var(--ink-soft);flex:1;text-align:right;transition:filter .2s}
+.hide-en .phrase .pen{filter:blur(6px)}
+.hide-en .phrase .pen.revealed{filter:none}
+.phrase.checked .pit{color:var(--olive-deep)}
+.rules{
+  background:var(--terra-deep);color:#FBEFE6;border-radius:16px;padding:26px;margin-top:40px;
+}
+.rules h4{font-family:'Fraunces',serif;font-style:italic;font-size:24px;color:#F4D9A8;margin-bottom:10px}
+.rules li{margin:8px 0 8px 18px;font-size:14.5px}
+.rules b{color:#fff}
+
+/* ---------- SCRIPTS ---------- */
+.script{
+  background:#FBF7ED;border:1.5px solid var(--line);border-radius:18px;padding:28px;margin-bottom:22px;position:relative;
+}
+.script h3{font-family:'Fraunces',serif;font-size:23px;font-weight:800;margin-bottom:4px}
+.script h3 .n{font-style:italic;font-weight:500;color:var(--terra);margin-right:10px}
+.script .why{font-size:13.5px;color:var(--ink-soft);font-style:italic;margin-bottom:14px}
+blockquote{
+  font-family:'Fraunces',serif;font-size:17px;line-height:1.65;font-weight:500;
+  border-left:4px solid var(--terra);padding:6px 0 6px 20px;margin:14px 0;
+}
+blockquote .vlabel{
+  display:inline-block;font-family:'Karla';font-size:10px;font-weight:800;letter-spacing:.2em;
+  text-transform:uppercase;background:var(--ink);color:var(--paper);border-radius:4px;padding:2px 8px;margin-bottom:6px;
+}
+.script .never{
+  background:#F6E3D7;border-radius:10px;padding:12px 16px;font-size:14px;margin-top:14px;
+}
+.script .never b{color:var(--terra-deep)}
+footer{
+  border-top:1.5px solid var(--line);padding:30px 0 50px;color:var(--ink-soft);font-size:13px;
+  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
+}
+footer .reset{color:var(--terra-deep);font-weight:700;cursor:pointer;text-decoration:underline}
+.motto{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--ink)}
+
+@media(max-width:760px){
+  .scoreboard{grid-template-columns:1fr 1fr}
+  .score-cell{border-left:none;border-top:1.5px dashed var(--line)}
+  .score-cell:first-child{grid-column:1/-1;border-top:none}
+  .cheat,.dossier-grid{grid-template-columns:1fr}
+  .stamp{display:none}
+  .phrase{flex-wrap:wrap}
+  .phrase .pen{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="tricolor"><span></span><span></span><span></span></div>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Marcello Barone · Adelaide · Begins 1 July</div>
+  <h1 class="masthead">VENTUNO<br><span class="it">giorni.</span></h1>
+  <p class="subhead">Twenty-one days. Two weapons: <strong>conversational Italian</strong> and <strong>SA real estate mastery</strong>. Walk into the new firm with an edge nobody your age has.</p>
+  <div class="stamp">Piano piano<small>step by step</small></div>
+</header>
+
+<div class="scoreboard">
+  <div class="score-cell">
+    <div class="score-label">Total progress</div>
+    <div class="score-num" id="pct">0<em>%</em></div>
+    <div class="bigbar"><i id="bigbar" style="width:0%"></i></div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Days complete</div>
+    <div class="score-num" id="daysDone">0<em>/21</em></div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Tasks done</div>
+    <div class="score-num" id="tasksDone">0<em id="tasksTotal">/0</em></div>
+  </div>
+  <div class="score-cell">
+    <div class="score-label">Phrases learned</div>
+    <div class="score-num" id="phrasesDone">0<em id="phrasesTotal">/0</em></div>
+  </div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button data-panel="piano" class="active"><span class="it-label">il</span>Piano</button>
+  <button data-panel="studio"><span class="it-label">lo</span>Studio</button>
+  <button data-panel="frasi"><span class="it-label">le</span>Frasi</button>
+  <button data-panel="copioni"><span class="it-label">i</span>Copioni</button>
+</nav>
+
+<main>
+
+<!-- ============ IL PIANO ============ -->
+<section class="panel show" id="piano">
+  <h2 class="section-title">The twenty-one <span class="it">days.</span></h2>
+  <p class="section-sub">Click a day to open it, tick tasks as you finish them. Labour days: minimum is speaking (30 min) + scripts (15 min). <b>Never a zero day.</b></p>
+  <div id="daysMount"></div>
+  <p class="hint">Progress saves automatically in this browser. When this goes to Vercel, your ticks come with it on this device.</p>
+</section>
+
+<!-- ============ LO STUDIO ============ -->
+<section class="panel" id="studio">
+  <h2 class="section-title">The study <span class="it">pack.</span></h2>
+  <p class="section-sub">SA process, the Form 1 + cooling-off cheat sheet, and all 60 terms. The bar: explain anything here in <b>one plain sentence a 70-year-old downsizer would nod at.</b></p>
+  <div class="note">⚠️ Verify legal specifics against <b>CBS (cbs.sa.gov.au)</b> and your firm's compliance training — legislation moves, and your licence matters more than any cheat sheet.</div>
+
+  <h3 class="gloss-cat" style="margin-top:0">The SA sales process — end to end</h3>
+  <div class="process">
+    <div class="step"><div><h4>Prospecting &amp; appraisal</h4><p>An agent's opinion of likely selling price — NOT a valuation (only a licensed valuer gives those).</p></div></div>
+    <div class="step"><div><h4>Sales Agency Agreement</h4><p>Signed before marketing. Sets commission, marketing costs, duration, and the vendor's acceptable selling price. Exclusive vs general agency. Advertised price can't sit below the prescribed minimum — SA's anti-underquoting rules.</p></div></div>
+    <div class="step"><div><h4>Campaign</h4><p>Photography, portals, signboard, opens. Method chosen: private treaty (advertised price, negotiated offers) or auction (no cooling-off).</p></div></div>
+    <div class="step"><div><h4>Form 1 — Vendor's Statement</h4><p>SA's disclosure document under the Land and Business (Sale and Conveyancing) Act 1994: title, encumbrances, easements, zoning, rates. Usually prepared by a conveyancer. For auction: available for inspection 3 consecutive business days before, and at the auction.</p></div></div>
+    <div class="step"><div><h4>Offers / auction day</h4><p>Private treaty: written offers on the contract. Auction: reserve set, limited announced vendor bids, fall of the hammer = unconditional.</p></div></div>
+    <div class="step"><div><h4>Contract of sale</h4><p>Conditions may include subject-to-finance, subject-to-sale, building &amp; pest.</p></div></div>
+    <div class="step"><div><h4>Cooling-off</h4><p>Private treaty buyers: 2 clear business days. None at auction.</p></div></div>
+    <div class="step"><div><h4>Conditional period</h4><p>Finance approval, inspections. All conditions met = unconditional.</p></div></div>
+    <div class="step"><div><h4>Settlement</h4><p>Conveyancers transfer title through Land Services SA, typically 30–60 days after contract. Keys over, commission paid from proceeds.</p></div></div>
+  </div>
+
+  <div class="cheat">
+    <div class="cheat-card">
+      <h4>Form 1 — what you must know</h4>
+      <ul>
+        <li>Required for every residential land/business sale in SA.</li>
+        <li>Contains title particulars, mortgages, encumbrances, easements, zoning, rates, government notices.</li>
+        <li>Must be <b>served</b> on the purchaser — cooling-off doesn't start until proper service.</li>
+        <li>A defective Form 1 means cooling-off rights may never expire → deals fall over. Respect the conveyancer.</li>
+        <li>Auction: on display 3 consecutive business days before + at the auction.</li>
+      </ul>
+    </div>
+    <div class="cheat-card alt">
+      <h4>Cooling-off — the rules</h4>
+      <ul>
+        <li><b>2 clear business days</b>, running from service of Form 1 (or contract, whichever is later).</li>
+        <li>Buyer cancels in writing; forfeits at most a small holding deposit (max $100).</li>
+        <li><b>No cooling-off when:</b> bought at auction (or same-day contract to highest bidder), buyer signed a legal-advice waiver certificate, or buyer is a company.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="gloss-cat">The sixty terms</h3>
+  <div class="glossary-tools">
+    <div class="toggle" id="quizToggle">🎓 Quiz mode — hide definitions</div>
+    <span style="font-size:13px;color:var(--ink-soft)">In quiz mode, say the definition out loud, then tap to check yourself.</span>
+  </div>
+  <div id="glossMount"></div>
+
+  <div class="dossier">
+    <h3 class="gloss-cat">Week 2 deep work</h3>
+    <div class="dossier-grid">
+      <div class="doss-card">
+        <h4>Listing presentation <span class="it">outline</span></h4>
+        <ul>
+          <li><b>Connection</b> — their story, why they're selling. Listen 80%.</li>
+          <li><b>Local proof</b> — median, growth, DOM, 3 comps. Cold.</li>
+          <li><b>Price</b> — honest CMA range, never buy the listing with fantasy numbers.</li>
+          <li><b>Method</b> — auction vs private treaty for THIS home, with reasons.</li>
+          <li><b>Marketing</b> — what, where, cost, why each item earns its money.</li>
+          <li><b>The agency &amp; you</b> — your energy + their track record.</li>
+          <li><b>Fees</b> — clear, unflinching, tied to outcome.</li>
+          <li><b>Close</b> — "Are you comfortable for me to get the paperwork started?"</li>
+        </ul>
+      </div>
+      <div class="doss-card">
+        <h4>The Italian downsizer <span class="it">conversation</span></h4>
+        <ul>
+          <li><b>Trust before transaction</b> — 40+ years in that home. Slow down.</li>
+          <li><b>Family in the room</b> — adult children often drive it; address everyone, defer to the parents.</li>
+          <li><b>Respect the home</b> — the garden, the tomatoes, the cantina. Mean it.</li>
+          <li><b>Italian for warmth, English for contracts</b> — legal matters must be understood in their strongest language. Compliance, not just courtesy.</li>
+          <li><b>Their fear</b> — being rushed, tricked, losing dignity. Your answer: patience, transparency, written follow-ups.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LE FRASI ============ -->
+<section class="panel" id="frasi">
+  <h2 class="section-title">The phrase <span class="it">bank.</span></h2>
+  <p class="section-sub">Five to ten per day, <b>out loud</b>. Tick a phrase only when you can say it without reading. Many Adelaide families speak dialect — standard Italian still lands as deep respect.</p>
+  <div class="glossary-tools">
+    <div class="toggle" id="enToggle">🇮🇹 Practice mode — hide English</div>
+    <span style="font-size:13px;color:var(--ink-soft)">Tap a blurred translation to check yourself.</span>
+  </div>
+  <div id="phraseMount"></div>
+  <div class="rules">
+    <h4>Rules of engagement</h4>
+    <ul>
+      <li><b>Always Lei / voi (formal) with elders.</b> "Tu" with a 75-year-old signora before she invites it = instant disrespect.</li>
+      <li>Italian for <b>warmth</b>; English for <b>contracts</b>. Never let a legal detail ride on beginner Italian.</li>
+      <li>Imperfect Italian with effort beats silence. They will correct you, feed you, and remember you.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ I COPIONI ============ -->
+<section class="panel" id="copioni">
+  <h2 class="section-title">The <span class="it">scripts.</span></h2>
+  <p class="section-sub">A script you can't deliver cold isn't yours yet. Drill 15–20 minutes daily until each one sounds like you, not like a script. Smile while talking — it's audible.</p>
+
+  <div class="script">
+    <h3><span class="n">01</span>The 30-second introduction</h3>
+    <p class="why">Ten times out loud, then once recorded. 25–30 seconds, ending on the free-appraisal hook.</p>
+    <blockquote>"Hi, I'm Marcello Barone — I'm a sales agent with [firm] working across [core suburbs]. I grew up in an Italian family, so I work a lot with families in the Italian community around Campbelltown and Payneham — especially people who've been in their home thirty, forty years and are starting to think about the next chapter. If you ever want to know what your home's worth in today's market, that conversation costs nothing."</blockquote>
+  </div>
+
+  <div class="script">
+    <h3><span class="n">02</span>"You seem young" — own it</h3>
+    <p class="why">They're really asking: "Can I trust you with my biggest asset?" Answer THAT.</p>
+    <blockquote><span class="vlabel">A · Hunger + backing</span><br>"You're right, I'm 19 — and that's exactly why I'll outwork every agent in this market for you. And you're not just getting me: you're getting [firm]'s whole team and [X] years of results behind every decision. I bring the energy, they bring the track record — you get both."</blockquote>
+    <blockquote><span class="vlabel">B · For the Italian family, with a smile</span><br>"Sì, sono giovane! But my nonna taught me two things — respect, and hard work. You'll get both, and you'll get my number answering every time you call. Try getting that from the others."</blockquote>
+    <blockquote><span class="vlabel">C · Proof-first</span><br>"Fair question. Ask me anything about this market — Campbelltown's median, what sold on your street, where prices moved this year. Judge me on what I know and how hard I work, not my birth year."</blockquote>
+    <div class="never"><b>Never:</b> apologize, get defensive, or over-explain. One confident answer, then move forward.</div>
+  </div>
+
+  <div class="script">
+    <h3><span class="n">03</span>Phone callback / prospecting</h3>
+    <p class="why">Every buyer call is a potential listing call — the gold is in the last question.</p>
+    <blockquote>"Hi [name], it's Marcello from [firm]. Thanks for coming through [address] on Saturday — I wanted to ask what you thought of it?<br><br><em>[If not right:]</em> "No problem — tell me what you're actually looking for, and I'll keep an eye out before things hit the portals."<br><br><em>[Always end:]</em> "And just so I can point you right — do you have a place to sell first, or are you ready to buy?"</blockquote>
+  </div>
+
+  <div class="script">
+    <h3><span class="n">04</span>Open-home greeting + qualifying</h3>
+    <p class="why">Three beats: buying or browsing → timeframe → home to sell. Conversational, never interrogation.</p>
+    <blockquote>"Hi, welcome in — I'm Marcello. Have a wander, it's a beautiful home."<br><br><em>[Later, relaxed:]</em> "So what brings you out today — buying for yourselves, or just keeping an eye on the market? … Do you have a home to sell as part of the move?"</blockquote>
+  </div>
+
+  <div class="script">
+    <h3><span class="n">05</span>The appraisal ask</h3>
+    <p class="why">Fence-line, door, or phone. No pressure, pure value.</p>
+    <blockquote>"I'm not here to push you to sell — most people I talk to aren't selling. But the market's moved a lot in [suburb] this year, and most owners are off by $50,000 or more on what their place is worth. A proper appraisal is free and takes twenty minutes. Worst case, you know your number."</blockquote>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="motto">"Piano piano si va lontano." — Step by step, you go far.</div>
+  <div>Progress saved locally · <span class="reset" id="exportBtn">export progress</span> · <span class="reset" id="importBtn">import progress</span> · <span class="reset" id="resetBtn">reset</span><input type="file" id="importFile" accept=".json,application/json" style="display:none"></div>
+</footer>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const START = new Date(2026,5,10); // 10 June 2026
+
+const DAYS = [
+ {d:1,w:"Wed 10/6",tag:"Foundations",tasks:[
+  ["ita","Unit 1 — skim what you know, drill numbers & prices hard"],
+  ["ita","Record 2-min Italian monologue: introduce yourself (KEEP IT — Day 21 comparison)"],
+  ["re","Write the FULL SA sales process from memory — no notes, no peeking"],
+  ["scr","Draft your 30-second self-introduction"]]},
+ {d:2,w:"Thu 11/6",tag:"Gap hunt",tasks:[
+  ["ita","Unit 2 + shadow the dialogues out loud"],
+  ["ita","2-min monologue: describe your day"],
+  ["re","Check your process map against the Studio tab + sa.gov.au — highlight every gap"],
+  ["scr","Drill self-intro 10× out loud, start phone callback script"]]},
+ {d:3,w:"Fri 12/6",tag:"Terms I",tasks:[
+  ["ita","Unit 3"],
+  ["ita","Phrase bank: first 10 phrases (greetings & rapport)"],
+  ["re","Glossary terms 1–20 — explain each in ONE plain sentence, out loud"],
+  ["scr","“You seem young” responses — drill until automatic"]]},
+ {d:4,w:"Sat 13/6",tag:"Terms II",tasks:[
+  ["ita","Unit 4"],
+  ["ita","2-min monologue describing a house in Italian"],
+  ["re","Glossary terms 21–40 — same test, one plain sentence each"],
+  ["scr","Open-home greeting + the three qualifying beats"]]},
+ {d:5,w:"Sun 14/6",tag:"Terms III",tasks:[
+  ["ita","Unit 5"],
+  ["ita","Phrase bank: +10 phrases (the house)"],
+  ["re","Glossary terms 41–60 — one plain sentence each, then quiz the full 60"],
+  ["scr","The appraisal ask — drill it"]]},
+ {d:6,w:"Mon 15/6",tag:"The patch",tasks:[
+  ["ita","Unit 6 + review weak spots from week 1"],
+  ["ita","Roleplay greeting a client in Italian, out loud"],
+  ["re","Pull median, 12-mo growth, days-on-market: Campbelltown, Newton, Payneham, Norwood, Prospect + firm's core suburbs"]]},
+ {d:7,w:"Tue 16/6",tag:"Checkpoint 1",cp:true,tasks:[
+  ["ita","Self-test: record 3-min monologue, compare to Day 1"],
+  ["re","Explain full sales process out loud in 5 minutes"],
+  ["re","Quiz all 60 terms (Quiz mode in the Studio tab)"],
+  ["scr","Deliver intro + phone script cold, no notes"],
+  ["re","Bring weak spots back to Claude for drills"]]},
+ {d:8,w:"Wed 17/6",tag:"Listings live",tasks:[
+  ["ita","Units 7–8"],
+  ["ita","Book 4 italki/Preply tutor sessions across the next 2 weeks (~$40–70, best money of the three weeks)"],
+  ["re","Finish suburb numbers — quiz yourself cold: “Campbelltown median? Growth this year?”"],
+  ["re","Pick your 10 listings to track for the rest of the run (price, method, days listed)"]]},
+ {d:9,w:"Thu 18/6",tag:"Legislation",tasks:[
+  ["ita","Unit 9"],
+  ["ita","Tutor session #1 (or 15+ min family conversation)"],
+  ["re","Agency agreements & legislation: agent obligations, misrepresentation, commission & marketing fees in SA"]]},
+ {d:10,w:"Fri 19/6",tag:"Conduct rules",tasks:[
+  ["ita","Unit 10"],
+  ["ita","Phrase bank: +10 phrases (selling & money)"],
+  ["re","Legislation continued: what agents can/can't say, trust money rules, referral disclosure"]]},
+ {d:11,w:"Sat 20/6",tag:"Form 1 deep",tasks:[
+  ["ita","Unit 11"],
+  ["ita","Roleplay the downsizer conversation in Italian"],
+  ["re","Form 1 deep-dive + cooling-off rules cold (cheat sheet in Studio tab)"],
+  ["re","OPTIONAL: attend 1 auction in a target suburb — study the language, be seen in the patch"]]},
+ {d:12,w:"Sun 21/6",tag:"Finance I",tasks:[
+  ["ita","Unit 12"],
+  ["ita","Tutor session #2"],
+  ["re","Buyer & finance side: pre-approval, deposits, LVR & LMI"]]},
+ {d:13,w:"Mon 22/6",tag:"Finance II",tasks:[
+  ["ita","Unit 13"],
+  ["ita","Phrase bank: final 10 phrases (trust & the downsizer) — all 50 done"],
+  ["re","Finance continued: bridging, SA first-home buyer schemes, speaking to both sides of a deal"]]},
+ {d:14,w:"Tue 23/6",tag:"Checkpoint 2",cp:true,tasks:[
+  ["ita","Hold a 5-min Italian conversation (tutor or family)"],
+  ["re","Quiz: Form 1 contents + cooling-off rules, cold"],
+  ["re","Check your 10 tracked listings — what changed and why?"],
+  ["scr","All five scripts delivered cold, recorded once — listen back"]]},
+ {d:15,w:"Wed 24/6",tag:"Know the firm",tasks:[
+  ["ita","Unit 14"],
+  ["ita","Roleplay a full open-home conversation in Italian"],
+  ["re","Firm research dossier part 1: their recent sales, top agents, market share in their patch"]]},
+ {d:16,w:"Thu 25/6",tag:"Dossier done",tasks:[
+  ["ita","Unit 15"],
+  ["ita","Tutor session #3"],
+  ["re","Firm dossier part 2: marketing style, listing presentation approach, who you can learn from fastest"]]},
+ {d:17,w:"Fri 26/6",tag:"Your pitch",tasks:[
+  ["ita","Unit 16"],
+  ["ita","Phrase bank review: re-test every phrase you've ticked — un-tick any you fumble"],
+  ["re","Draft YOUR listing presentation outline (Studio tab, deep work section)"]]},
+ {d:18,w:"Sat 27/6",tag:"Rehearse",tasks:[
+  ["ita","Unit 17"],
+  ["ita","Full Italian open-home roleplay: greeting → qualifying → downsizer conversation"],
+  ["re","Rehearse your listing presentation out loud, start to finish"],
+  ["re","OPTIONAL: auction #2 — this time watch how agents work the crowd before and after"]]},
+ {d:19,w:"Sun 28/6",tag:"Prospecting",tasks:[
+  ["ita","Unit 18"],
+  ["ita","Tutor session #4"],
+  ["re","Write your Italian-belt prospecting plan: which streets, what approach, what you say"]]},
+ {d:20,w:"Mon 29/6",tag:"Book done",tasks:[
+  ["ita","Units 19–20 — BOOK FINISHED 🎉"],
+  ["re","Review 10 tracked listings — tell the full three-week story of each"],
+  ["scr","Listing presentation cold, one final run"]]},
+ {d:21,w:"Tue 30/6",tag:"Final checkpoint",cp:true,tasks:[
+  ["ita","Record final monologue + hold a 5-min conversation. Listen to Day 1 vs Day 21."],
+  ["re","Full self-test: process in 5 min, 60 terms, Form 1 + cooling-off cold"],
+  ["scr","All scripts + listing presentation, cold, no notes"],
+  ["re","Final session with Claude: fix last gaps, plan week 1 at the firm"],
+  ["re","Pack, prep, early night — tomorrow it begins"]]}
+];
+
+const GLOSSARY = {
+ "Title & Legal":[
+  ["Torrens title","The “your name on the government register = you own it” system — invented in Adelaide in 1858. Credibility trivia gold."],
+  ["Certificate of Title","The official record of who owns the property and what's registered against it."],
+  ["Encumbrance","Anything on the title that limits what you can do — a mortgage, easement, or restriction."],
+  ["Easement","A legal right for someone else to use part of your land, like SA Water's sewer line through the back corner."],
+  ["Covenant","A rule attached to the land about what owners can or can't do — e.g. no two-storey builds."],
+  ["Caveat","A legal flag on the title saying someone claims an interest — nothing registers until it's resolved."],
+  ["Strata title","You own your unit plus a share of common areas; older format, defined by the building structure."],
+  ["Community title","SA's newer shared-scheme format — lots defined by land boundaries, run by a community corporation."],
+  ["Fee simple","Full outright ownership of land — the strongest form there is."],
+  ["Tenants in common","Co-owners with defined shares (can be unequal) that each can leave to anyone in their will."],
+  ["Joint tenants","Co-owners as one — when one dies, the other automatically owns the lot."],
+  ["Conveyancer","The licensed professional who legally transfers the property — in SA, conveyancers do most of it, not lawyers."]],
+ "Selling & Agency":[
+  ["Vendor","The seller."],
+  ["Appraisal","An agent's opinion of likely selling price — free, not legally binding."],
+  ["Valuation","A formal price assessment by a licensed valuer — banks rely on it, and it costs money."],
+  ["CMA","Comparative Market Analysis — pricing a home from recent sales of similar nearby properties."],
+  ["Sales Agency Agreement","The contract between vendor and agency authorising the sale and setting commission."],
+  ["Exclusive / sole agency","One agency holds the listing — they're paid even if the vendor finds the buyer."],
+  ["General agency","Multiple agencies can sell; only the one who sells gets paid. Rare, weak commitment."],
+  ["Vendor's acceptable selling price","The figure in the agency agreement the vendor will accept — the floor for advertising in SA."],
+  ["Underquoting","Advertising below the price actually expected — illegal in SA under prescribed-price rules."],
+  ["Commission","The agency's fee, usually a % of sale price, paid at settlement from the proceeds."],
+  ["VPA","Vendor-paid advertising — marketing costs the vendor pays, win or lose."],
+  ["Off-market sale","Sold without public advertising, through the agent's buyer database."],
+  ["Expression of Interest","Buyers submit their best offers by a deadline instead of an advertised price."]],
+ "Auction":[
+  ["Reserve price","The confidential minimum the vendor will accept at auction."],
+  ["On the market","Bidding has passed the reserve — the property WILL sell to the highest bidder."],
+  ["Vendor bid","A bid made by the auctioneer for the vendor — limited number allowed in SA, must be announced."],
+  ["Passed in","Bidding didn't reach reserve; the highest bidder usually gets first right to negotiate."],
+  ["Clearance rate","The % of auctioned homes that sold that week — the market-heat thermometer."],
+  ["Registered bidder","In SA you must register with ID before you can bid at auction."]],
+ "Contract & Settlement":[
+  ["Contract of sale","The binding agreement once both sign — with the Form 1, it's the deal."],
+  ["Subject to finance","The buyer can exit if their loan isn't approved by a set date."],
+  ["Subject to sale","The buyer can exit if their own home doesn't sell in time."],
+  ["Unconditional","All conditions satisfied — the deal can't fall over without serious penalty."],
+  ["Deposit","Usually up to 10%, held in trust until settlement."],
+  ["Settlement","The day money and title legally change hands — keys handed over."],
+  ["Settlement period","The gap between contract and settlement — commonly 30–60 days, negotiable."],
+  ["Trust account","The audited account where client money MUST sit — never the agency's own account."],
+  ["Default","A party failing to complete the contract — penalties and lost deposits follow."],
+  ["Requisitions","Formal questions the buyer's conveyancer asks before settlement."],
+  ["Adjustments","Splitting rates, taxes and water between buyer and seller at settlement, calculated to the day."]],
+ "Money & Finance":[
+  ["Stamp duty","State transfer tax the buyer pays — SA has abolished it for eligible first-home buyers on NEW homes (verify current rules)."],
+  ["First Home Owner Grant","SA government grant for first-home buyers building or buying new (~$15k — verify current amount)."],
+  ["Pre-approval","The bank's conditional yes on a loan amount before shopping — serious buyers have it."],
+  ["LVR","Loan-to-value ratio — loan vs property value; above 80% usually triggers LMI."],
+  ["LMI","Lenders mortgage insurance — paid by the borrower to protect the BANK on high-LVR loans."],
+  ["Bridging loan","Short-term finance covering the gap when you buy before you sell."],
+  ["Equity","The part of the home's value the owner actually owns — value minus loan."],
+  ["Capital growth","The rise in property value over time."],
+  ["Rental yield","Annual rent as a % of property value — the investor's headline number."],
+  ["Negative gearing","When an investment property's costs exceed rent, with the loss claimed against tax."],
+  ["CGT","Capital gains tax on investment-property profit at sale — the family home is exempt."],
+  ["Land tax","Annual state tax on investment land holdings — not the family home."]],
+ "Market Talk":[
+  ["Median price","The middle sale price in a suburb — better than average, because mansions don't distort it."],
+  ["Days on market","Average time from listing to sale — low DOM means a hot market."],
+  ["Buyer's / seller's market","Who holds the cards: more stock than buyers (buyer's) or more buyers than stock (seller's)."],
+  ["Stock levels","How many properties are for sale in an area right now."],
+  ["Comparable sales","Recent nearby sales of similar homes used to justify a price — “comps”."],
+  ["Zoning","Council/state rules on what land may be used for — drives development value."]]
+};
+
+const PHRASES = {
+ "A · Warm greetings & rapport":[
+  ["Buongiorno signora / signore!","Good morning madam / sir!"],
+  ["Piacere di conoscerLa.","Pleased to meet you. (formal — always Lei with elders)"],
+  ["Mi chiamo Marcello, lavoro con [agenzia].","My name is Marcello, I work with [agency]."],
+  ["La mia famiglia è italiana.","My family is Italian."],
+  ["Come sta?","How are you? (formal)"],
+  ["Che bel giardino!","What a beautiful garden!"],
+  ["Questi pomodori sono magnifici!","These tomatoes are magnificent!"],
+  ["Da quanto tempo abitate qui?","How long have you lived here?"],
+  ["Che bella casa — si vede l'amore.","What a beautiful house — you can see the love."],
+  ["Posso offrirvi il mio aiuto?","May I offer you my help?"],
+  ["Grazie mille per il vostro tempo.","Thank you so much for your time."],
+  ["Arrivederci, a presto!","Goodbye, see you soon!"]],
+ "B · The house":[
+  ["la casa / l'abitazione","the house / dwelling"],
+  ["la cucina","the kitchen"],
+  ["il bagno","the bathroom"],
+  ["la camera da letto","the bedroom"],
+  ["il soggiorno","the living room"],
+  ["il giardino","the garden"],
+  ["il garage / la rimessa","the garage"],
+  ["la cantina","the cellar — sacred ground, where the wine and sauce live"],
+  ["il terreno","the land / block"],
+  ["grande / piccolo / luminoso","big / small / full of light"],
+  ["ristrutturato","renovated"],
+  ["in ottime condizioni","in excellent condition"]],
+ "C · Selling & money":[
+  ["vendere la casa","to sell the house"],
+  ["comprare una casa","to buy a house"],
+  ["il prezzo","the price"],
+  ["Quanto vale la mia casa?","How much is my house worth? (THE question you'll be asked)"],
+  ["una valutazione gratuita","a free appraisal"],
+  ["il mercato è forte adesso","the market is strong right now"],
+  ["l'asta","the auction"],
+  ["l'offerta","the offer"],
+  ["il compratore / l'acquirente","the buyer"],
+  ["il venditore","the seller / vendor"],
+  ["il contratto","the contract"],
+  ["la caparra","the deposit"],
+  ["l'agente immobiliare","the real estate agent"],
+  ["l'agenzia immobiliare","the real estate agency"]],
+ "D · Trust & the downsizer conversation":[
+  ["Non c'è fretta.","There's no rush."],
+  ["Capisco, è la casa di una vita.","I understand — it's the home of a lifetime."],
+  ["Potete fidarvi di me.","You can trust me."],
+  ["Parlo italiano e inglese — vi spiego tutto.","I speak Italian and English — I'll explain everything."],
+  ["Parlatene con la famiglia.","Talk it over with the family."],
+  ["I vostri figli possono chiamarmi quando vogliono.","Your children can call me whenever they like."],
+  ["Vi lascio il mio numero.","I'll leave you my number."],
+  ["Cosa cercate? Qualcosa di più piccolo?","What are you looking for? Something smaller?"],
+  ["Una casa più facile da gestire.","A house that's easier to manage."],
+  ["Vi accompagno io, passo per passo.","I'll walk you through it, step by step."],
+  ["Per il contratto, parliamo in inglese così è tutto chiaro.","For the contract, let's speak English so everything is clear."],
+  ["Piano piano.","Step by step / slowly slowly. (They'll smile — promise.)"]]
+};
+
+/* ================= STATE ================= */
+const KEY="ventuno-v1";
+let state={};
+try{state=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){state={}}
+/* one-time migration from the old 14-day plan: Day 1 tasks and all phrases are unchanged */
+try{
+  const old=JSON.parse(localStorage.getItem("quattordici-v1"));
+  if(old&&Object.keys(state).length===0){
+    Object.keys(old).forEach(k=>{if(k.startsWith("d1t")||k.startsWith("p"))state[k]=old[k]});
+    localStorage.setItem(KEY,JSON.stringify(state));
+    localStorage.removeItem("quattordici-v1");
+  }
+}catch(e){}
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+const CHECK_SVG='<svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ================= RENDER DAYS ================= */
+const todayNum=(()=>{const ms=new Date().setHours(0,0,0,0)-START.getTime();const d=Math.floor(ms/86400000)+1;return d>=1&&d<=21?d:null})();
+const catName={ita:"ITA",re:"RE",scr:"SCRIPT"};
+const catCls={ita:"ita",re:"re",scr:"scr"};
+
+function renderDays(){
+  const mount=document.getElementById("daysMount");
+  let html="";
+  [[1,"Settimana Uno — foundations & terms"],[2,"Settimana Due — law, money & the patch"],[3,"Settimana Tre — the pitch & the polish"]].forEach(([wk,label])=>{
+    html+=`<div class="week-label">${label}</div><div class="days">`;
+    DAYS.filter(x=>wk===1?x.d<=7:wk===2?(x.d>7&&x.d<=14):x.d>14).forEach(day=>{
+      const ids=day.tasks.map((_,i)=>`d${day.d}t${i}`);
+      const done=ids.filter(id=>state[id]).length;
+      const pct=Math.round(done/ids.length*100);
+      const full=done===ids.length;
+      const C=2*Math.PI*18;
+      html+=`<div class="day ${full?"done":""} ${day.d===todayNum?"today":""}" data-day="${day.d}" id="card-d${day.d}">
+        <div class="day-head">
+          <div>
+            <div class="day-num">${String(day.d).padStart(2,"0")}<small>${day.w} · ${day.cp?"⭑ ":""}${day.tag}</small></div>
+          </div>
+          <svg class="ring" viewBox="0 0 46 46">
+            <circle class="track" cx="23" cy="23" r="18"/>
+            <circle class="fill" cx="23" cy="23" r="18" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}"/>
+            <text x="23" y="27" text-anchor="middle">${pct}</text>
+          </svg>
+        </div>
+        <div class="tasks">
+          ${day.tasks.map((t,i)=>`<div class="task ${state[ids[i]]?"checked":""}" data-id="${ids[i]}">
+            <div class="box">${CHECK_SVG}</div>
+            <span><b class="cat ${catCls[t[0]]}">${catName[t[0]]}</b>${t[1]}</span>
+          </div>`).join("")}
+        </div>
+        ${full?'<div class="fatto">FATTO ✓</div>':""}
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  mount.innerHTML=html;
+  mount.querySelectorAll(".day").forEach(card=>{
+    card.addEventListener("click",e=>{
+      if(e.target.closest(".task"))return;
+      card.classList.toggle("open");
+    });
+  });
+  mount.querySelectorAll(".task").forEach(t=>{
+    t.addEventListener("click",()=>{
+      const id=t.dataset.id;
+      state[id]=!state[id];if(!state[id])delete state[id];
+      save();
+      const openDays=[...mount.querySelectorAll(".day.open")].map(d=>d.dataset.day);
+      renderDays();
+      openDays.forEach(d=>{const c=mount.querySelector(`[data-day="${d}"]`);if(c)c.classList.add("open")});
+      updateScore();
+    });
+  });
+}
+
+/* ================= RENDER GLOSSARY ================= */
+function renderGloss(){
+  const mount=document.getElementById("glossMount");
+  let html="";
+  Object.entries(GLOSSARY).forEach(([cat,terms])=>{
+    html+=`<h3 class="gloss-cat">${cat}</h3><div class="gloss-grid">`;
+    terms.forEach(([term,def])=>{html+=`<div class="term"><b>${term}</b><p>${def}</p></div>`});
+    html+=`</div>`;
+  });
+  mount.innerHTML=html;
+  mount.querySelectorAll(".term p").forEach(p=>p.addEventListener("click",()=>{
+    if(document.getElementById("studio").classList.contains("quiz-on"))p.classList.toggle("revealed");
+  }));
+}
+
+/* ================= RENDER PHRASES ================= */
+function renderPhrases(){
+  const mount=document.getElementById("phraseMount");
+  let html="";let idx=0;
+  Object.entries(PHRASES).forEach(([grp,list])=>{
+    html+=`<div class="phrase-group">${grp}</div>`;
+    list.forEach(([it,en])=>{
+      const id=`p${idx++}`;
+      html+=`<div class="phrase ${state[id]?"checked":""}" data-id="${id}">
+        <div class="box">${CHECK_SVG}</div>
+        <div class="pit">${it}</div><div class="pen">${en}</div>
+      </div>`;
+    });
+  });
+  mount.innerHTML=html;
+  mount.querySelectorAll(".phrase").forEach(ph=>{
+    ph.querySelector(".pen").addEventListener("click",e=>{
+      if(document.getElementById("frasi").classList.contains("hide-en")){
+        e.stopPropagation();ph.querySelector(".pen").classList.toggle("revealed");
+      }
+    });
+    ph.addEventListener("click",()=>{
+      const id=ph.dataset.id;
+      state[id]=!state[id];if(!state[id])delete state[id];
+      save();ph.classList.toggle("checked");updateScore();
+    });
+  });
+}
+
+/* ================= SCORE ================= */
+const TASK_IDS=DAYS.flatMap(d=>d.tasks.map((_,i)=>`d${d.d}t${i}`));
+const PHRASE_COUNT=Object.values(PHRASES).reduce((a,l)=>a+l.length,0);
+function updateScore(){
+  const tDone=TASK_IDS.filter(id=>state[id]).length;
+  const pDone=Object.keys(state).filter(k=>k.startsWith("p")&&state[k]).length;
+  const dDone=DAYS.filter(d=>d.tasks.every((_,i)=>state[`d${d.d}t${i}`])).length;
+  const total=TASK_IDS.length+PHRASE_COUNT;
+  const pct=Math.round((tDone+pDone)/total*100);
+  document.getElementById("pct").innerHTML=`${pct}<em>%</em>`;
+  document.getElementById("bigbar").style.width=pct+"%";
+  document.getElementById("daysDone").innerHTML=`${dDone}<em>/21</em>`;
+  document.getElementById("tasksDone").innerHTML=`${tDone}<em>/${TASK_IDS.length}</em>`;
+  document.getElementById("phrasesDone").innerHTML=`${pDone}<em>/${PHRASE_COUNT}</em>`;
+}
+
+/* ================= TABS & TOGGLES ================= */
+document.getElementById("tabs").addEventListener("click",e=>{
+  const btn=e.target.closest("button");if(!btn)return;
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active",b===btn));
+  document.querySelectorAll("section.panel").forEach(p=>p.classList.toggle("show",p.id===btn.dataset.panel));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+document.getElementById("quizToggle").addEventListener("click",function(){
+  this.classList.toggle("on");
+  document.getElementById("studio").classList.toggle("quiz-on");
+  document.querySelectorAll(".term p.revealed").forEach(p=>p.classList.remove("revealed"));
+});
+document.getElementById("enToggle").addEventListener("click",function(){
+  this.classList.toggle("on");
+  document.getElementById("frasi").classList.toggle("hide-en");
+  document.querySelectorAll(".pen.revealed").forEach(p=>p.classList.remove("revealed"));
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(confirm("Reset ALL progress? This can't be undone.")){
+    state={};save();renderDays();renderPhrases();updateScore();
+  }
+});
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({app:"ventuno-giorni",exported:new Date().toISOString(),state},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="ventuno-progress.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      const incoming=data.state||data;
+      if(typeof incoming!=="object"||Array.isArray(incoming))throw new Error("bad format");
+      Object.keys(incoming).forEach(k=>{if(incoming[k]===true&&/^(d\d+t\d+|p\d+)$/.test(k))state[k]=true});
+      save();renderDays();renderPhrases();updateScore();
+      alert("Progress imported. Bentornato!");
+    }catch(err){alert("That file doesn't look like a Ventuno Giorni progress export.")}
+    e.target.value="";
+  };
+  r.readAsText(f);
+});
+
+/* ================= INIT ================= */
+renderDays();renderGloss();renderPhrases();updateScore();
+if(todayNum){const c=document.getElementById("card-d"+todayNum);if(c)c.classList.add("open")}
+</script>
+</body>
+</html>

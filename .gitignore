@@ -1,0 +1,12 @@
+# Copyrighted course material — never publish
+*.pdf
+
+# Personal study notes stay local
+*.md
+!README.md
+
+# Local tooling
+.claude/
+.vercelignore
+.vercel/
+.DS_Store
