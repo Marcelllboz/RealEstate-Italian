@@ -4,13 +4,9 @@
 # Personal study notes stay local
 *.md
 !README.md
-!docs/superpowers/specs/*.md
-!docs/superpowers/plans/*.md
-
-# Brainstorm session scratch
-.superpowers/
 
 # Local tooling
 .claude/
+.vercelignore
 .vercel/
 .DS_Store
